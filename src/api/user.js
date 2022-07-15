@@ -42,3 +42,47 @@ export const putUser = (uid, data) => {
     }
   })
 }
+
+// 添加用户
+export const addUserForm = (addForm) => {
+  return request({
+    url: 'users',
+    method: 'POST',
+    data: addForm,
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}
+
+// 根据ID查询用户的信息
+export const getUsersId = (uid) => {
+  return request({
+    url: `users/${uid}`,
+    method: 'GET',
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}
+// 提交修改用户信息
+export const putUserInfo = (uid, ediForm) => {
+  return request({
+    url: `users/${uid}`,
+    method: 'PUT',
+    data: ediForm,
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}
+// 根据ID删除用户
+export const deleteUsers = (uid) => {
+  return request({
+    url: `users/${uid}`,
+    method: 'DELETE',
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}

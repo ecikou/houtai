@@ -52,17 +52,19 @@
           </el-table-column>
           <!--操作区域  -->
           <el-table-column prop="address" label="操作" width="180px">
-            <template slot-scope="">
+            <template slot-scope="scope">
               <el-row>
                 <el-button
                   size="mini"
                   type="primary"
                   icon="el-icon-edit"
+                  @click="isShowEdit(scope.row.id)"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="danger"
                   icon="el-icon-delete"
+                  @click="delUserbyId(scope.row.id)"
                 ></el-button>
                 <el-button
                   size="mini"
@@ -87,7 +89,7 @@
           >
           </el-pagination>
         </div>
-        <!-- 对话框 -->
+        <!-- 添加用户对话框 -->
         <el-dialog
           title="添加用户对话框"
           :visible.sync="addUserVisible"
@@ -117,9 +119,35 @@
           <!-- 按钮 -->
           <span slot="footer" class="dialog-footer">
             <el-button @click="addUserVisible = false">取 消</el-button>
-            <el-button type="primary" @click="addUserVisible = false"
-              >确 定</el-button
-            >
+            <el-button type="primary" @click="addUsers">确 定</el-button>
+          </span>
+        </el-dialog>
+        <!-- 修改用户对话框 -->
+        <el-dialog
+          title="编辑用户"
+          :visible.sync="elDialogVisible"
+          width="50%"
+          @close="elDialogState"
+        >
+          <el-form
+            :model="ediForm"
+            :rules="ediFormRules"
+            ref="ediFormRef"
+            label-width="70px"
+          >
+            <el-form-item label="用户名">
+              <el-input v-model="ediForm.username" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="ediForm.email"></el-input>
+            </el-form-item>
+            <el-form-item label="手机号" prop="mobile">
+              <el-input v-model="ediForm.mobile"></el-input>
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="elDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="eldPutaddUser">确 定</el-button>
           </span>
         </el-dialog>
       </template>
@@ -128,7 +156,7 @@
 </template>
 
 <script>
-import { getInfo, putUser } from '@/api/user'
+import { getInfo, putUser, addUserForm, getUsersId, putUserInfo, deleteUsers } from '@/api/user'
 import { validateMobile, validateEmail } from '@/utils/validate'
 export default {
   created () {
@@ -158,13 +186,27 @@ export default {
       },
       users: [],
       total: 0,
-      // 对话框显示隐藏
+      // 添加对话框显示隐藏
       addUserVisible: false,
+      // 修改对话框显示隐藏
+      elDialogVisible: false,
       addForm: {
         username: '',
         password: '',
         emial: '',
         mobile: ''
+      },
+      // 修改用户信息的资料
+      ediForm: {},
+      ediFormRules: {
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: validateEmailFn, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: validateMobileFn, trigger: 'blur' }
+        ]
       },
       addRules: {
         username: [
@@ -188,6 +230,7 @@ export default {
     }
   },
   methods: {
+    // 获取用户信息
     async getuserInfo () {
       try {
         // const res = await getInfo(this.pagenum, this.pagesize, this.query)
@@ -211,6 +254,7 @@ export default {
       this.usersInfo.pagesize = newSize
       this.getuserInfo()
     },
+    // 用户状态跟新
     async userStarChange (users) {
       try {
         const res = await putUser(users.id, users.mg_state)
@@ -224,8 +268,86 @@ export default {
       } catch (err) {
       }
     },
+    // 重置添加用户表单
     closeDialog () {
       this.$refs.addruleForm.resetFields()
+    },
+    // 重置修改用户表单
+    elDialogState () {
+      this.$refs.ediFormRef.resetFields()
+    },
+    // 添加用户
+    addUsers () {
+      this.$refs.addruleForm.validate(async value => {
+        console.log(value)
+        if (!value) return false
+        try {
+          const res = await addUserForm(this.addForm)
+          console.log(res)
+          this.$message.success('添加用户成功')
+          this.getuserInfo()
+          // 添加成功后关闭对话框
+          this.addUserVisible = false
+        } catch (err) {
+          console.log(err)
+          this.$message.error('添加用户失败')
+        }
+      })
+    },
+    // 修改用户信息的展现
+    async isShowEdit (id) {
+      this.elDialogVisible = true
+      console.log(id)
+      try {
+        const res = await getUsersId(id)
+        console.log(res)
+        this.ediForm = res.data.data
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    // 提交修改用户信息
+    eldPutaddUser () {
+      this.$refs.ediFormRef.validate(async value => {
+        console.log(value)
+        if (!value) return false
+        try {
+          const res = await putUserInfo(this.ediForm.id, this.ediForm)
+          console.log(res)
+          this.getuserInfo()
+          this.elDialogVisible = false
+          this.$message.success('修改用户信息成功')
+        } catch (err) {
+          this.$message.error('修改用户信息失败')
+        }
+      })
+    },
+    // 获取删除用户的id
+    async delUserbyId (id) {
+      console.log(id)
+      try {
+        const res = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        console.log(res) // confirm
+      } catch (err) {
+        console.log(err) // cancel
+        if (err === 'cancel') {
+          return this.$message.info('已取消删除')
+        }
+        return err
+        // 删除用户
+      }
+      try {
+        const res1 = await deleteUsers(id)
+        console.log(res1)
+        this.$message.success('删除用户成功')
+        this.getuserInfo()
+      } catch (err) {
+        console.log(err)
+      }
     }
   },
   computed: {},
