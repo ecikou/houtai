@@ -3,7 +3,7 @@
     <el-header>
       <div>
         <img src="" alt="">
-        <span>一剑天门网络</span>
+        <span>UserBackstage</span>
       </div>
       <el-button @click="outLogin" type="warning" size="small">退出</el-button>
     </el-header>

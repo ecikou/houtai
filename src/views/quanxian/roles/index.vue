@@ -6,30 +6,53 @@
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card class="box-card">
-      <el-button type="primary">添加角色</el-button>
-
+      <el-row>
+        <el-col>
+          <el-button type="primary">添加角色</el-button>
+        </el-col>
+      </el-row>
+      <!-- 角色列表 -->
       <el-table
         fit:false
         size="mini"
-        :data="tableData"
+        :data="roleList"
         border
-        style="width: 100%"
       >
         <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="商品名称">
-                <span>{{ props.row.name }}</span>
-              </el-form-item>
-            </el-form>
+          <template v-slot="scope">
+            <el-row v-for="item in scope.row.children" :key="item.id" style="border: 1px solid #eee">
+              <!-- 左侧蓝色第一列 -->
+                <el-col :span="4">
+                  <el-tag style="margin:8px">{{item.authName}}</el-tag>
+                  <i class="el-icon-caret-right"></i>
+                  </el-col>
+              <el-col :span="20">
+                <e-row v-for="item1 in item.children" :key="item1.id">
+                  <el-col>
+                    <el-tag type="success" style="margin:8px">{{item1.authName}}</el-tag>
+                    <i class="el-icon-caret-right"></i>
+                  </el-col>
+                  <el-col></el-col>
+                </e-row>
+              </el-col>
+            </el-row>
+            <span>{{ scope.row }}</span>
           </template>
         </el-table-column>
+
         <el-table-column type="index" label="#"> </el-table-column>
-        <el-table-column prop="date" label="日期" width="180">
+        <el-table-column prop="roleName" label="角色名称">
         </el-table-column>
-        <el-table-column prop="name" label="姓名" width="180">
+        <el-table-column prop="roleDesc" label="角色描述">
         </el-table-column>
-        <el-table-column prop="address" label="地址"> </el-table-column>
+        <!-- 操作按钮 -->
+        <el-table-column label="操作" width="290px">
+          <template >
+           <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+           <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+           <el-button size="mini" type="warning" icon="el-icon-setting">分配权限</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
   </div>
@@ -38,13 +61,8 @@
 <script>
 import { getRoles } from '@/api/user'
 export default {
-  async created () {
-    try {
-      const res = await getRoles()
-      console.log(res)
-    } catch (err) {
-      console.log(err)
-    }
+  created () {
+    this.getRoles()
   },
   data () {
     return {
@@ -64,10 +82,22 @@ export default {
         date: '2016-05-03',
         name: '王小虎',
         address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      }],
+      roleList: []
     }
   },
-  methods: {},
+  methods: {
+    async getRoles () {
+      try {
+        const res = await getRoles()
+        console.log(res)
+        this.roleList = res.data.data
+        console.log(this.roleList)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  },
   computed: {},
   watch: {},
   filters: {},

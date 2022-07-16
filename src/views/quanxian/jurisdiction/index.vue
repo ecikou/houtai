@@ -9,18 +9,22 @@
       <el-table
         fit:false
         size="mini"
-        :data="tableData"
+        :data="powerList"
         border
         style="width: 100%"
         stripe
       >
         <el-table-column type="index" label="#"></el-table-column>
-        <el-table-column prop="date" label="权限名称" width="180">
+        <el-table-column prop="authName" label="权限名称" >
         </el-table-column>
-        <el-table-column prop="name" label="路径" width="180">
+        <el-table-column prop="path" label="路径" >
         </el-table-column>
-        <el-table-column prop="address" label="权限等级">
-          <el-tag>等级一</el-tag>
+        <el-table-column prop="level" label="权限等级">
+          <template v-slot="scope">
+            <el-tag v-if="scope.row.level==='0'">等级一</el-tag>
+            <el-tag type="success" v-else-if="scope.row.level==='1'">等级二</el-tag>
+            <el-tag type="warning" v-else>等级三</el-tag>
+          </template>
         </el-table-column>
       </el-table>
     </el-card>
@@ -28,32 +32,22 @@
 </template>
 
 <script>
-import { jurisdIction } from '@/api/jurisdiction'
+import { getPowerList } from '@/api/jurisdiction'
 export default {
   created () {
-    this.getUserList()
+    this.getPowerList()
   },
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      },
-      {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }
-      ],
-      userList: []
+      powerList: []
     }
   },
   methods: {
-    async getUserList (userList) {
+    async getPowerList () {
       try {
-        const res = await jurisdIction(userList)
+        const res = await getPowerList(this.powerList)
         console.log(res)
+        this.powerList = res.data.data
       } catch (err) {
         console.log(err)
       }
