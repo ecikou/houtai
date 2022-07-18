@@ -17,7 +17,8 @@ const routes = [
       { path: '/classif', component: () => import('@/views/item/classification.vue') },
       { path: '/itemafc', component: () => import('@/views/item/itemafc.vue') },
       { path: '/order', component: () => import('@/views/order/index.vue') },
-      { path: '/datalist', component: () => import('@/views/datastatistics/index.vue') }
+      { path: '/datalist', component: () => import('@/views/datastatistics/index.vue') },
+      { path: '/newhome', component: () => import('@/views/Home/components/newhome.vue') }
 
     ]
   }

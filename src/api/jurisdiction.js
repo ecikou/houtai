@@ -9,3 +9,13 @@ export const getPowerList = (list) => {
     }
   })
 }
+// 删除权限管理中的角色
+export const deletePowerUser = (id) => {
+  return request({
+    url: `roles/${id}`,
+    method: 'delete',
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}

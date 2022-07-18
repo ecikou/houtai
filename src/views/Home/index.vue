@@ -2,7 +2,7 @@
   <el-container class="container">
     <el-header>
       <div>
-        <img src="" alt="">
+        <img src="" alt="" style="">
         <span>UserBackstage</span>
       </div>
       <el-button @click="outLogin" type="warning" size="small">退出</el-button>

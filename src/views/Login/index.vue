@@ -61,7 +61,7 @@ export default {
           if (this.user && this.user.token) {
             console.log(111)
             window.localStorage.setItem('token', this.user.token)
-            return this.$router.push('/home')
+            return this.$router.push('/newhome')
           } else {
             this.$message.error('登录失败,用户名或者密码错误')
           }
@@ -87,7 +87,7 @@ export default {
 
 <style scoped lang='less'>
 .login-container {
-  background-color: #2b4b6b;
+  background: url("@/assets/云.jpg") center;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -96,7 +96,7 @@ export default {
   .form-box {
     width: 450px;
     height: 240px;
-    background-color: #fff;
+    background: url("@/assets/yunu.jpg") center;
     border-radius: 5px;
     padding: 30px 15px;
     box-sizing: border-box;
