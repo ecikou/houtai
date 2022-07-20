@@ -104,7 +104,7 @@
 
 <script>
 import { getRoles } from '@/api/user'
-import { deletePowerUser } from '@/api/jurisdiction'
+import { deletePowerUser, delRolesPower } from '@/api/jurisdiction'
 export default {
   created () {
     this.getRoles()
@@ -173,6 +173,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         })
+        await delRolesPower()
         console.log(res) // confirm
       } catch (err) {
         console.log(err) // cancel

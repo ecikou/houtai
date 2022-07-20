@@ -19,3 +19,13 @@ export const deletePowerUser = (id) => {
     }
   })
 }
+// 删除权限管理中的权限
+export const delRolesPower = (roleId, rightId) => {
+  return request({
+    url: `roles/${roleId}/rights/${rightId}`,
+    method: 'delete',
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}

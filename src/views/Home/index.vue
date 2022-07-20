@@ -8,34 +8,52 @@
       <el-button @click="outLogin" type="warning" size="small">退出</el-button>
     </el-header>
     <el-container>
+
       <el-aside width="200px">
+ 
         <el-menu
           router
-          background-color="#ab9299"
+          background-color="#b5c8c8"
           text-color="#fff"
           unique-opened
         >
           <el-submenu index="1">
-            <template #title>用户管理</template>
+
+            <template #title>
+              <i class="el-icon-user-solid"></i>
+              <span>用户管理</span>
+              </template>
             <el-menu-item index="userlist">用户列表</el-menu-item>
           </el-submenu>
           <el-submenu index="2">
-            <template #title>权限管理</template>
+            <template #title>
+              <i class="el-icon-set-up"></i>
+              <span>权限管理</span>
+              </template>
             <el-menu-item index="roles">角色列表</el-menu-item>
             <el-menu-item index="permissions">权限列表</el-menu-item>
           </el-submenu>
           <el-submenu index="3">
-            <template #title>商品管理</template>
+            <template #title>
+              <i class="el-icon-s-cooperation"></i>
+              <span>商品管理</span>
+              </template>
             <el-menu-item index="itemlist">商品列表</el-menu-item>
             <el-menu-item index="classif">分类参数</el-menu-item>
             <el-menu-item index="itemafc">商品分类</el-menu-item>
           </el-submenu>
           <el-submenu index="4">
-            <template #title>订单管理</template>
+            <template #title>
+              <i class="el-icon-s-order"></i>
+              <span>订单管理</span>
+              </template>
             <el-menu-item index="order">订单列表</el-menu-item>
           </el-submenu>
           <el-submenu index="5">
-            <template #title>数据统计</template>
+            <template #title>
+              <i class="el-icon-s-platform"></i>
+              <span>数据统计</span>
+              </template>
             <el-menu-item index="datalist">数据报表</el-menu-item>
           </el-submenu>
         </el-menu>
@@ -52,7 +70,9 @@ import { mapGetters } from 'vuex'
 export default {
   created () { },
   data () {
-    return {}
+    return {
+      isCollapse: true
+    }
   },
   methods: {
     // async outLogin () {
@@ -98,7 +118,7 @@ export default {
     align-items: center;
   }
   .el-aside {
-    background-color: #ab9299;
+    background-color: #b5c8c8;
   }
   .el-main {
     background-color: #eaedf1;
