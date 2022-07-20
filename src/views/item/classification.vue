@@ -5,7 +5,9 @@
       <el-breadcrumb-item>>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>分类参数</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-card class="box-card"> </el-card>
+    <el-card class="box-card">
+      <el-alert :closable="false" title="警告提示的文案" type="warning" show-icon> </el-alert>
+    </el-card>
   </div>
 </template>
 
