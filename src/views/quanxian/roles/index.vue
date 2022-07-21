@@ -25,7 +25,12 @@
             >
               <!-- 左侧蓝色第一列 -->
               <el-col :span="4">
-                <el-tag style="margin: 8px">{{ item.authName }}</el-tag>
+                <el-tag
+                  closable
+                  @close="deleRightId(scope.row, item.id)"
+                  style="margin: 8px"
+                  >{{ item.authName }}</el-tag
+                >
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <el-col :span="20">
@@ -35,9 +40,13 @@
                   :key="item1.id"
                 >
                   <el-col :span="5">
-                    <el-tag type="success" style="margin: 8px">{{
-                      item1.authName
-                    }}</el-tag>
+                    <el-tag
+                      type="success"
+                      style="margin: 8px"
+                      closable
+                      @close="deleRightId(scope.row, item1.id)"
+                      >{{ item1.authName }}</el-tag
+                    >
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <el-col :span="19">
@@ -48,7 +57,7 @@
                       :key="item2.id"
                       type="warning"
                       closable
-                      @close="deleRightId"
+                      @close="deleRightId(scope.row, item2.id)"
                       >{{ item2.authName }}</el-tag
                     >
                   </el-col>
@@ -75,7 +84,11 @@
               @click="delusers(scope.row.id)"
               >删除</el-button
             >
-            <el-button size="mini" type="warning" icon="el-icon-setting"
+            <el-button
+              @click="showAssignPermissions(scope.row)"
+              size="mini"
+              type="warning"
+              icon="el-icon-setting"
               >分配权限</el-button
             >
           </template>
@@ -98,13 +111,38 @@
           </el-button>
         </span>
       </el-dialog>
+      <!-- 分配权限的对话框 -->
+      <el-dialog
+        title="分配权限"
+        :visible.sync="showAssign"
+        width="50%"
+        @close="closeSting"
+      >
+        <!-- 树形列表 -->
+        <el-tree
+          :data="treeList"
+          show-checkbox
+          default-expand-all
+          node-key="id"
+          :default-checked-keys="treeListKeys"
+          :props="treeListProps"
+        >
+        </el-tree>
+        <!-- 底部按钮 -->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showAssign = false">取 消</el-button>
+          <el-button type="primary" @click="showAssign = false"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
 
 <script>
 import { getRoles } from '@/api/user'
-import { deletePowerUser, delRolesPower } from '@/api/jurisdiction'
+import { deletePowerUser, delRolesPower, getTreeList } from '@/api/jurisdiction'
 export default {
   created () {
     this.getRoles()
@@ -121,7 +159,14 @@ export default {
       addsuserForm: {
         rolename: '',
         roleDesc: ''
-      }
+      },
+      showAssign: false,
+      treeList: [],
+      treeListProps: {
+        children: 'children',
+        label: 'authName'
+      },
+      treeListKeys: []
     }
   },
   methods: {
@@ -166,14 +211,21 @@ export default {
     addDialogVisible () {
     },
     // 删除最后一列的标签
-    async deleRightId () {
+    async deleRightId (roleId, rightId) {
       try {
         const res = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
-        await delRolesPower()
+        try {
+          const res1 = await delRolesPower(roleId.id, rightId)
+          this.$message.success('删除成功')
+          roleId.children = res1.data.data
+          console.log(res1)
+        } catch (err) {
+          console.log(err)
+        }
         console.log(res) // confirm
       } catch (err) {
         console.log(err) // cancel
@@ -183,6 +235,31 @@ export default {
         return err
         // 删除用户
       }
+    },
+    // 展示分配权限的对话框
+    async showAssignPermissions (user) {
+      this.showAssign = true
+      try {
+        const res = await getTreeList()
+        console.log(res)
+        this.treeList = res.data.data
+        this.getTreeListId(user, this.treeListKeys)
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    // 获取子节点的id，添加到新数组中
+    getTreeListId (item, arr) {
+      if (!item.children) {
+        return arr.push(item.id)
+      }
+      item.children.forEach(item => {
+        this.getTreeListId(item, arr)
+      })
+    },
+    // 解决分配权限的缓存bug
+    closeSting () {
+      this.treeListKeys = []
     }
   },
   computed: {},

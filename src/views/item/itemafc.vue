@@ -13,8 +13,10 @@
         <el-table-column prop="cat_deleted" label="是否有效"> </el-table-column>
         <el-table-column prop="cat_level" label="排序">
           <template v-slot="scope">
-            <el-tag v-if="scope.row.cat_level===0">级一</el-tag>
-            <el-tag type="success" v-else-if="scope.row.cat_level===1">级二</el-tag>
+            <el-tag v-if="scope.row.cat_level === 0">级一</el-tag>
+            <el-tag type="success" v-else-if="scope.row.cat_level === 1"
+              >级二</el-tag
+            >
             <el-tag type="warning" v-else>级三</el-tag>
           </template>
         </el-table-column>
@@ -31,9 +33,9 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="classificationList.pagenum"
+        :current-page="classList.pagenum"
         :page-sizes="[1, 2, 4, 10]"
-        :page-size="classificationList.pagesize"
+        :page-size="classList.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
       >
@@ -66,11 +68,13 @@ export default {
     }
   },
   methods: {
-    handleSizeChange () {
-
+    handleSizeChange (newSize) {
+      this.classList.pagesize = newSize
+      this.getItemParams()
     },
-    handleCurrentChange () {
-
+    handleCurrentChange (newCurrent) {
+      this.classList.pagenum = newCurrent
+      this.getItemParams()
     },
     async getItemParams () {
       try {

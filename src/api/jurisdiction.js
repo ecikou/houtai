@@ -29,3 +29,13 @@ export const delRolesPower = (roleId, rightId) => {
     }
   })
 }
+// 权限列表的树状资料
+export const getTreeList = (list) => {
+  return request({
+    url: 'rights/tree',
+    method: 'get',
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}
